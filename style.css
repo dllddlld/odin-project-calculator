@@ -16,32 +16,48 @@ body {
 
 .container {
     flex: 1;
-    max-width: 600px;
+    max-width: 500px;
 }
 
-#display {
+.display {
     background-color: darkslategray;
     color: white;
     text-align: right;
     overflow: hidden;
-    font-size: 36px;
-    margin-bottom: 6px;
     padding: 10px;
 }
 
+#previous {
+    padding-bottom: 0;
+    font-size: 12px;
+}
+
+#current {
+    padding-top: 0;
+    margin-bottom: 6px;
+    font-size: 36px;
+}
+
+/*--- buttons ---*/
+
 #buttons {
     display: grid;
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 6px;
 }
 
-#buttons div {
+#buttons button {
     padding: 20px 0;
     text-align: center;
     font-size: 24px;
+    border: 0px;
 }
 
-.operator {
+#buttons button:hover {
+    cursor: pointer;
+}
+
+.operator, .special {
     background-color: lightcoral;
 }
 
@@ -52,4 +68,8 @@ body {
 #zero {
     grid-column-start: 1;
     grid-column-end: 3;
+}
+
+#backspace {
+    font-family: sans-serif;
 }

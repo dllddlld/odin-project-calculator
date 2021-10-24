@@ -9,29 +9,31 @@
 </head>
 <body>
     <div class="container">
-        <div id="display">12345</div>
+        <div class="display" id="previous">&nbsp;</div>
+        <div class="display" id="current">0</div>
         <div id="buttons">
-            <div class="operator">AC</div>
-            <div class="operator">+/-</div>
-            <div class="operator">%</div>
-            <div class="operator">/</div>
-            <div class="number">7</div>
-            <div class="number">8</div>
-            <div class="number">9</div>
-            <div class="operator">*</div>
-            <div class="number">4</div>
-            <div class="number">5</div>
-            <div class="number">6</div>
-            <div class="operator">-</div>
-            <div class="number">1</div>
-            <div class="number">2</div>
-            <div class="number">3</div>
-            <div class="operator">+</div>
-            <div class="number" id="zero">0</div>
-            <div class="number" id="decimal">.</div>
-            <div class="operator">=</div>
+            <button title="Backspace" class="special" id="backspace">&#8617;</button>
+            <button title="Clear Entry" class="special">CE</button>
+            <button title="Clear All" class="special">C</button>
+            <button class="operator">/</button>
+            <button class="number">7</button>
+            <button class="number">8</button>
+            <button class="number">9</button>
+            <button class="operator">*</button>
+            <button class="number">4</button>
+            <button class="number">5</button>
+            <button class="number">6</button>
+            <button class="operator">-</button>
+            <button class="number">1</button>
+            <button class="number">2</button>
+            <button class="number">3</button>
+            <button class="operator">+</button>
+            <button class="number" id="zero">0</button>
+            <button class="number" id="decimal">.</button>
+            <button class="operator">=</button>
         </div>
     </div>
-    
+    <script src='./node_modules/decimal.js-light/decimal.js'></script>
+    <script src='script.js'></script>
 </body>
 </html>
