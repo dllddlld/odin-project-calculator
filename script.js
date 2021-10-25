@@ -12,29 +12,30 @@ let clearDisplayOnNextEntry = false;
 
 const add = function(num1, num2) {
     let result = new Decimal(num1).plus(num2);
-    return result.toString();
+    return format(result);
 }
 
 const subtract = function(num1, num2) {
     let result = new Decimal(num1).minus(num2);
-    return result.toString();
+    return format(result);
 }
 
 const multiply = function(num1, num2) {
     let result = new Decimal(num1).times(num2);
-    return result.toString();
+    return format(result);
 }
 
 const divide = function(num1, num2) {
     if (new Decimal(num2).isZero()) return 'Cannot divide by zero';
     let result = new Decimal(num1).dividedBy(num2);
-    return result.toString();
+    return format(result);
 }
 
 const execute = function(num1, num2) {
     if (isNullOrEmpty(stashedOperator)) return;
     if (!stashedOperator.hasOwnProperty('fn')) return;
-    return stashedOperator.fn(num1, num2);
+    let result = stashedOperator.fn(num1, num2);
+    return format(result);
 }
 
 const backspace = function() {
@@ -150,7 +151,9 @@ function getButtonData(textContent, key) {
 function addToCurrentDisplay() {
     if (this.textContent === '0' && currentDisplay === '0') return;
     if (this.textContent === '.' && currentDisplay.indexOf('.') !== -1) return;
-    if (currentDisplay.length === MAX_CHAR) return;
+    if (currentDisplay.length === MAX_CHAR && !clearDisplayOnNextEntry) {
+        return;
+    }
     if (currentDisplay === '0' && this.textContent !== '.') {
         currentDisplay = this.textContent;
     } else if (clearDisplayOnNextEntry) {
@@ -187,16 +190,15 @@ function isNullOrEmpty(v) {
     return typeof v === 'undefined' || v === null || v.length === 0;
 }
 
-// function format(result) {
-//     let characterLength = result.toFixed().length;
-//     if (characterLength <= MAX_CHAR) return result.toFixed();
-//     let decimalPlaces = result.decimalPlaces();
-//     let integerPlaces = result.toFixed(0).length;
-//     if (integerPlaces > MAX_CHAR) {
-//         return result.toNumber().toString();
-//     } else {
-//         let formattedDP = Math.min(MAX_CHAR - 1 - integerPlaces, characterLength - decimalPlaces);
-//         return result.toFixed(formattedDP);
-//     }
-// }
+function format(result) {
+    let characterLength = result.toFixed().length;
+    if (characterLength <= MAX_CHAR) return result.toFixed();
+    let integerPlaces = result.toFixed(0).length;
+    if (integerPlaces > MAX_CHAR) {
+        return result.toNumber().toString();
+    } else {
+        let formattedDP = MAX_CHAR - 1 - integerPlaces;
+        return result.toFixed(formattedDP);
+    }
+}
 
