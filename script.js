@@ -37,9 +37,28 @@ const execute = function(num1, num2) {
     return stashedOperator.fn(num1, num2);
 }
 
-// const backspace = function() {
+const backspace = function() {
+    if (currentDisplay.length === 1) {
+        currentDisplay = '0';
+    } else {
+        currentDisplay = currentDisplay.substring(0, currentDisplay.length - 1);
+    }
+    updateDisplay('#current', currentDisplay);
+}
 
-// }
+const clearEntry = function() {
+    currentDisplay = '0';
+    clearDisplayOnNextEntry = false;
+    updateDisplay('#current', currentDisplay);
+}
+
+const clearAll = function() {
+    clearEntry();
+    stashedNumber = '0';
+    stashedOperator = null;
+    clearDisplayOnNextEntry = false;
+    updateDisplay('#previous', '\xA0');
+}
 
 addButtonMapping();
 addPageListeners();
@@ -57,7 +76,9 @@ function addButtonMapping() {
         createButtonData('/', '/', divide, false),
         createButtonData('=', '=', execute, true),
         createButtonData('=', 'Enter', execute, true),
-        // createButtonData('&#8617;', 'Backspace', execute, true),
+        createButtonData('\u21A9', 'Backspace', backspace, false),
+        createButtonData('CE', 'Delete', clearEntry, false),
+        createButtonData('C', 'Escape', clearAll, true)
     );
 }
 
@@ -76,25 +97,45 @@ function handleKeyEvent(e) {
 function doOperation() {
     let operator = getButtonData(this.textContent);
     if (isNullOrEmpty(operator)) return;
+    if (clearDisplayOnNextEntry) {
+        if (stashedOperator === operator) return;
+        if (operator.text === '=') return;
+        stashedOperator = operator;
+        previousDisplay = currentDisplay + ' ' + operator.text;
+        updateDisplay('#previous', previousDisplay);
+        return;
+    }
     if (isNullOrEmpty(stashedOperator)) {
         if (operator.text === '=') return;
         stashedOperator = operator;
-        previousDisplay = currentDisplay + ' ' + stashedOperator.text;
+        previousDisplay = currentDisplay + ' ' + operator.text;
+        updateDisplay('#previous', previousDisplay);
     } else {
-        previousDisplay = stashedNumber + ' ' + stashedOperator.text + ' ' + currentDisplay;
-        currentDisplay = stashedOperator.fn(stashedNumber, currentDisplay);
+        if (operator.text === '=') {
+            previousDisplay = stashedNumber + ' ' + stashedOperator.text + ' ' + 
+                currentDisplay + ' =';
+            updateDisplay('#previous', previousDisplay);
+            currentDisplay = stashedOperator.fn(stashedNumber, currentDisplay);
+        } else {
+            currentDisplay = stashedOperator.fn(stashedNumber, currentDisplay);
+            previousDisplay = currentDisplay + ' ' + operator.text;
+            updateDisplay('#previous', previousDisplay);
+        }
         updateDisplay('#current', currentDisplay);
         stashedOperator = operator.resetAfterFn ? null : operator;
     }
     stashedNumber = currentDisplay;
     clearDisplayOnNextEntry = true;
-    updateDisplay('#previous', previousDisplay);
 }
 
-// function doSpecialOperation() {
-//     let specialOperator = getButtonData(this.textContent);
-//     if (isNullOrEmpty(specialOperator)) return;
-// }
+function doSpecialOperation() {
+    let specialOperator = getButtonData(this.textContent);
+    if (isNullOrEmpty(specialOperator)) return;
+    specialOperator.fn();
+    if (!isNullOrEmpty(stashedOperator)) {
+        stashedOperator = specialOperator.resetAfterFn ? null : stashedOperator;
+    }
+}
 
 function getButtonData(textContent, key) {
     let button;
@@ -113,7 +154,9 @@ function addToCurrentDisplay() {
     if (currentDisplay === '0' && this.textContent !== '.') {
         currentDisplay = this.textContent;
     } else if (clearDisplayOnNextEntry) {
-        updateDisplay('#previous', currentDisplay + ' ' + stashedOperator.text);
+        previousDisplay = !isNullOrEmpty(stashedOperator) ? currentDisplay +
+            ' ' + stashedOperator.text : currentDisplay;
+        updateDisplay('#previous', previousDisplay);
         currentDisplay = this.textContent;
         clearDisplayOnNextEntry = false;
     } else {
@@ -134,9 +177,9 @@ function addPageListeners() {
     operatorButtons.forEach(button => {
         button.addEventListener('click', doOperation);
     });
-    // specialButtons.forEach(button => {
-    //     button.addEventListener('click', doSpecialOperation);
-    // });
+    specialButtons.forEach(button => {
+        button.addEventListener('click', doSpecialOperation);
+    });
     document.addEventListener('keydown', handleKeyEvent);
 }
 
