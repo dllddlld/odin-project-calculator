@@ -161,10 +161,10 @@ function addToCurrentDisplay() {
             ' ' + stashedOperator.text : currentDisplay;
         updateDisplay('#previous', previousDisplay);
         currentDisplay = this.textContent;
-        clearDisplayOnNextEntry = false;
     } else {
         currentDisplay += this.textContent;
     }
+    clearDisplayOnNextEntry = false;
     updateDisplay('#current', currentDisplay);
 }
 
